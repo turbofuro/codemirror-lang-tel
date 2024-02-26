@@ -1,26 +1,141 @@
-@top Program { expression* }
+@precedence {
+  member,
+  call,
+  times @left,
+  plus @left,
+  rel @left,
+  ternary @right,
+  assign @right
+}
 
-@skip { space | LineComment }
+@top Program { expression }
 
-expression {
-  Identifier |
+expression[@isGroup=Expression] {
+  Number |
   String |
-  Boolean |
-  Application { "(" expression* ")" }
+  TemplateString |
+  Identifier ~arrow |
+  @specialize[@name=BooleanLiteral]<Identifier, "true" | "false"> |
+  kw<"null"> |
+  ArrayExpression {
+    "[" commaSep1<"..."? expression | ""> ~destructure "]"
+  } |
+  ObjectExpression {
+    "{" commaSep<Property> ~destructure "}"
+  } |
+  UnaryExpression |
+  ParenthesizedExpression |
+  MemberExpression |
+  BinaryExpression |
+  ConditionalExpression {
+    expression !ternary LogicOp<"?"> expression LogicOp<":"> expression
+  } |
+  CallExpression {
+    expression !call ArgList
+  }
+}
+
+ParenthesizedExpression { "(" expression ")" }
+
+ArgList { "(" commaSep<"..."? expression> ")" }
+
+propName { PropertyName | "[" expression "]" | Number | String }
+
+Property {
+  propName ~destructure (":" expression)? |
+  "..." expression
+}
+
+UnaryExpression {
+  (LogicOp<"!"> | ArithOp<"+" | "-">)
+  expression
+}
+
+BinaryExpression {
+  expression !times (ArithOp<"/"> | ArithOp<"%"> | ArithOp<"*">) expression |
+  expression !plus ArithOp<"+" | "-"> expression |
+  expression !rel CompareOp expression
+}
+
+MemberExpression {
+  expression !member ("." PropertyName | "[" expression "]")
+}
+
+commaSep<content> {
+  (content ("," content)*)?
+}
+
+commaSep1<content> {
+  content ("," content)*
+}
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
+
+@skip { spaces | newline | LineComment | BlockComment }
+
+@skip {} {
+  TemplateString {
+    "`" (templateEscape | templateContent | Interpolation)* templateEnd
+  }
+}
+
+Interpolation { InterpolationStart expression "}" }
+
+@local tokens {
+  InterpolationStart[@name="${"] { "${" }
+  templateEnd { "`" }
+  templateEscape { "\\" _ }
+  @else templateContent
+}
+
+@skip {} {
+  BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+@local tokens {
+  blockCommentEnd { "*/" }
+  blockCommentNewline { "\n" }
+  @else blockCommentContent
 }
 
 @tokens {
-  Identifier { $[a-zA-Z_\-0-9]+ }
+  spaces[@export] { $[\u0009 \u000b\u00a0]+ }
 
-  String { '"' (!["\\] | "\\" _)* '"' }
+  newline[@export] { $[\r\n] }
 
-  Boolean { "#t" | "#f" }
+  LineComment { "//" ![\n]* }
 
-  LineComment { ";" ![\n]* }
+  @precedence { "/*", LineComment, ArithOp<"/"> }
 
-  space { $[ \t\n\r]+ }
+  identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
 
-  "(" ")"
+  Identifier { identifierChar (identifierChar | @digit)* }
+
+  PropertyName { Identifier }
+
+  hex { @digit | $[a-fA-F] }
+
+  Number {
+    (@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+      (("e" | "E") ("+" | "-")? ("_" | @digit)+)? |
+    @digit ("_" | @digit)* "n" |
+    "0x" (hex | "_")+ "n"? |
+    "0b" $[01_]+ "n"? |
+    "0o" $[0-7_]+ "n"?
+  }
+
+  @precedence { Number "." }
+
+  String {
+    '"' (![\\\n"] | "\\" _)* '"'?
+  }
+
+  ArithOp<expr> { expr }
+  LogicOp<expr> { expr }
+  CompareOp { ("<" | ">" | "==" | "!=") "="? }
+
+  "(" ")" "[" "]" "{" "}"
+  "." "," ";" ":"
 }
 
 @detectDelim

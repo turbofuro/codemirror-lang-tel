@@ -1,41 +1,115 @@
-# Booleans
-
-#t
-#f
-
+# Null
+null
 ==>
+Program(null)
 
-Program(Boolean, Boolean)
-
-# Identifiers
-
-one
-Two_Three
-
-==>
-
-Program(Identifier, Identifier)
-
-# Strings
-
+# String
 "hello"
-"one\"\\two"
+==>
+Program(String)
 
+# Number and comment
+123.0 // comment
+==>
+Program(Number,LineComment)
+
+# Block comment
+"hello" /* test test */
+==>
+Program(String,BlockComment)
+
+# Identifier
+hello
+==>
+Program(Identifier)
+
+# Basic sum
+5 + 5 == 10
+==>
+Program(BinaryExpression(BinaryExpression(Number,ArithOp,Number),CompareOp,Number))
+
+# Member
+request.headers["user-agent"]
 ==>
 
-Program(String, String)
+Program(MemberExpression(MemberExpression(Identifier,".",PropertyName),"[",String,"]"))
 
-# Applications
-
-(begin
-  (when #t
-    (print (concat "hello" " " "world")))
-  (print "DONE"))
-
+# Empty object equality
+{} == {}
 ==>
+Program(BinaryExpression(ObjectExpression("{","}"),CompareOp,ObjectExpression("{","}")))
 
-Program(Application(
-  Identifier,
-  Application(Identifier, Boolean, Application(
-    Identifier, Application(Identifier, String, String, String)))
-  Application(Identifier, String)))
+# Empty object in array equality
+[{}] == [{}]
+==>
+Program(BinaryExpression(ArrayExpression("[",ObjectExpression("{","}"),"]"),CompareOp,ArrayExpression("[",ObjectExpression("{","}"),"]")))
+
+# Empty array equality
+[] == []
+==>
+Program(BinaryExpression(ArrayExpression("[","]"),CompareOp,ArrayExpression("[","]")))
+
+# Number equality
+5 == 5
+==>
+Program(BinaryExpression(Number,CompareOp,Number))
+
+# Number with sum equality
+5 + 4 == 9
+==>
+Program(BinaryExpression(BinaryExpression(Number,ArithOp,Number),CompareOp,Number))
+
+# Members
+numbers[0] + numbers[1] == 3
+==>
+Program(BinaryExpression(BinaryExpression(MemberExpression(Identifier,"[",Number,"]"),ArithOp,MemberExpression(Identifier,"[",Number,"]")),CompareOp,Number))
+
+# Modulo
+10 % 3 == 1
+==>
+Program(BinaryExpression(BinaryExpression(Number,ArithOp,Number),CompareOp,Number))
+
+# Joining
+[1, 2, 3, 4].join("-") == "1-2-3-4"
+==>
+Program(BinaryExpression(CallExpression(MemberExpression(ArrayExpression("[",Number,",",Number,",",Number,",",Number,"]"),".",PropertyName),ArgList("(",String,")")),CompareOp,String))
+
+# Joining with whitespace
+[1, 2, 3, 4].join(", ") == "1, 2, 3, 4"
+==>
+Program(BinaryExpression(CallExpression(MemberExpression(ArrayExpression("[",Number,",",Number,",",Number,",",Number,"]"),".",PropertyName),ArgList("(",String,")")),CompareOp,String))
+
+# Member call
+(-5).abs() == 5
+==>
+Program(BinaryExpression(CallExpression(MemberExpression(ParenthesizedExpression("(",UnaryExpression(ArithOp,Number),")"),".",PropertyName),ArgList("(",")")),CompareOp,Number))
+
+# Ternary
+(nothing != null ? "OK" : "NOPE") == "NOPE"
+==>
+Program(BinaryExpression(ParenthesizedExpression("(",ConditionalExpression(BinaryExpression(Identifier,CompareOp,null),LogicOp,String,LogicOp,String),")"),CompareOp,String))
+
+# Ternary 2
+(false ? "one" : true ? "two" : "three") == "two"
+==>
+Program(BinaryExpression(ParenthesizedExpression("(",ConditionalExpression(BooleanLiteral,LogicOp,String,LogicOp,ConditionalExpression(BooleanLiteral,LogicOp,String,LogicOp,String)),")"),CompareOp,String))
+
+# Ternary 3
+(true ? "one" : true ? "two" : "three") == "one"
+==>
+Program(BinaryExpression(ParenthesizedExpression("(",ConditionalExpression(BooleanLiteral,LogicOp,String,LogicOp,ConditionalExpression(BooleanLiteral,LogicOp,String,LogicOp,String)),")"),CompareOp,String))
+
+# Weird number equality
+2e-1 == 0.2
+==>
+Program(BinaryExpression(Number,CompareOp,Number))
+
+# Weird number equality 2
+2e+1 == 20
+==>
+Program(BinaryExpression(Number,CompareOp,Number))
+
+# Weird string equality
+"\u1114" == "ᄔ"
+==>
+Program(BinaryExpression(String,CompareOp,String))
