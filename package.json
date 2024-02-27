@@ -1,6 +1,7 @@
 {
   "name": "@turbofuro/codemirror-lang-tel",
   "version": "0.1.0",
+  "private": false,
   "description": "TEL language support for CodeMirror",
   "repository": "https://github.com/turbofuro/codemirror-lang-tel",
   "author": "Bartosz Wiśniewski <bartosz.wisniewski@turbofuro.com>",
