@@ -43,6 +43,6 @@ export const TelLanguage = LRLanguage.define({
   },
 });
 
-export function TEL() {
+export function tel() {
   return new LanguageSupport(TelLanguage);
 }
