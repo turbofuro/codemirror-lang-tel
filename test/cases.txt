@@ -131,7 +131,7 @@ Program(ObjectExpression("{",Property(PropertyName,":",Number),"}"))
 Hello
 ```
 ==>
-Program(MultilineString)
+Program(MultilineString("```",MultilineStringTag))
 
 # Multiline string
 ```
@@ -156,13 +156,13 @@ Program(MultilineString)
 ```tag
 ```
 ==>
-Program(MultilineString)
+Program(MultilineString("```",MultilineStringTag))
 
 # Empty tagged multiline string with post whitespace
 ```tag     
 ```
 ==>
-Program(MultilineString)
+Program(MultilineString("```",MultilineStringTag))
 
 # Tagged multiline (3 lines) string with post whitespace
 ```tag     
@@ -171,4 +171,4 @@ are
 you?
 ```
 ==>
-Program(MultilineString)
+Program(MultilineString("```",MultilineStringTag))

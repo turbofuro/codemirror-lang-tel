@@ -74,19 +74,25 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
 @skip { spaces | newline | LineComment | BlockComment }
 
 @skip {} {
-  TemplateString {
-    "`" (templateEscape | templateContent | Interpolation)* templateEnd
+  MultilineStringTag { pseudoIdentifier }
+  
+  MultilineString {
+    "```" (MultilineStringTag)? (optionalSpaces)? multilineNewline (optionalSpaces | pseudoIdentifier | multilineRest | multilineNewline)* multilineEnd
   }
 }
 
-Interpolation { InterpolationStart expression "}" }
-
+// To future @pr0gramista...
+// the multilineContent defined here is everything that is unmatched by other tokens (that is some whitespaces, unicodes, but not fe. digits or ascii letters)
+// that is why in MultilineString we need to use like match every rule as the "content" of the string
+// a bit unintuitive but it is how the parser works
 @local tokens {
-  InterpolationStart[@name="${"] { "${" }
-  templateEnd { "`" }
-  templateEscape { "\\" _ }
-  @else templateContent
+  pseudoIdentifier { (@asciiLetter | @digit)+ }
+  optionalSpaces { $[\u0009 \u000b\u00a0]+ }
+  multilineNewline { $[\n\r] }
+  multilineEnd { "```" }
+  @else multilineRest
 }
+
 
 @skip {} {
   BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
@@ -128,15 +134,6 @@ Interpolation { InterpolationStart expression "}" }
 
   String {
     '"' (![\\\n"] | "\\" _)* '"'?
-  }
-
-  MultilineStringTag {
-    Identifier
-  }
-
-  // Multiline string like in Markdown (with tag)
-  MultilineString {
-    "```" (MultilineStringTag | "") newline (![\\\n"] | "\\" _)* newline* "```"
   }
   
   ArithOp<expr> { expr }
