@@ -15,6 +15,7 @@ expression[@isGroup=Expression] {
   String |
   MultilineString |
   Identifier |
+  Environment |
   @specialize[@name=BooleanLiteral]<Identifier, "true" | "false"> |
   kw<"null"> |
   ArrayExpression {
@@ -116,9 +117,12 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
 
   @precedence { "/*", LineComment, ArithOp<"/"> }
 
+  // TODO: Validate allowed characters against TEL implementation
   identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
 
-  Identifier { identifierChar (identifierChar | @digit)* }
+  Identifier { @asciiLetter (identifierChar | @digit)* }
+
+  Environment { "$" Identifier }
 
   PropertyName { Identifier }
 

@@ -28,6 +28,8 @@ export const TelLanguage = LRLanguage.define({
         CompareOp: t.compareOperator,
         Equals: t.definitionOperator,
         Arrow: t.function(t.punctuation),
+        Identifier: t.variableName,
+        Environment: t.special(t.variableName),
         "( )": t.paren,
         "[ ]": t.squareBracket,
         "{ }": t.brace,

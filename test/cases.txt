@@ -28,6 +28,16 @@ hello
 ==>
 Program(Identifier)
 
+# Environment variable reference
+$REDIS_URL
+==>
+Program(Environment)
+
+# Environment sum
+$REDIS_URL + "?insert=kremowka"
+==>
+Program(BinaryExpression(Environment,ArithOp,String))
+
 # Basic sum
 5 + 5 == 10
 ==>
