@@ -17,13 +17,13 @@ new EditorView({
 
 ## Mixed parsing
 Like Markdown TEL supports multiline strings with tags using 3 backticks:
-```
+~~~
 ```html
 <div>
   <p>Some text</p>
 </div>
 ```
-```
+~~~
 
 To add support for mixed parsing, you can use the `parseMixed` function. For example, to add support for SQL in multiline strings, you can use the following code:
 ```js
