@@ -14,14 +14,14 @@ expression[@isGroup=Expression] {
   Number |
   String |
   MultilineString |
-  Identifier ~arrow |
+  Identifier |
   @specialize[@name=BooleanLiteral]<Identifier, "true" | "false"> |
   kw<"null"> |
   ArrayExpression {
-    "[" commaSep1<"..."? expression | ""> ~destructure "]"
+    "[" commaSep1<"..."? expression | ""> "]"
   } |
   ObjectExpression {
-    "{" commaSep<Property> ~destructure "}"
+    "{" commaSep<Property> "}"
   } |
   UnaryExpression |
   ParenthesizedExpression |
@@ -42,7 +42,7 @@ ArgList { "(" commaSep<"..."? expression> ")" }
 propName { PropertyName | "[" expression "]" | Number | String }
 
 Property {
-  propName ~destructure (":" expression)? |
+  propName (":" expression)? |
   "..." expression
 }
 
