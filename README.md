@@ -6,7 +6,7 @@ Use as any other extension for CodeMirror 6. For example:
 
 ```javascript
 import { basicSetup, EditorView } from "codemirror"
-import { tel } from "codemirror-lang-tel";
+import { tel } from "@turbofuro/codemirror-lang-tel";
 
 new EditorView({
   doc: "\"Hello, World!\" + $TEST",
