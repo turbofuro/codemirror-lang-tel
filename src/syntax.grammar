@@ -75,9 +75,13 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
 
 @skip {} {
   MultilineStringTag { pseudoIdentifier }
+
+  MultilineStringContent {
+    (optionalSpaces | pseudoIdentifier | multilineRest | multilineNewline)*
+  }
   
   MultilineString {
-    "```" (MultilineStringTag)? (optionalSpaces)? multilineNewline (optionalSpaces | pseudoIdentifier | multilineRest | multilineNewline)* multilineEnd
+    "```" (MultilineStringTag)? (optionalSpaces)? multilineNewline MultilineStringContent multilineEnd
   }
 }
 
@@ -92,7 +96,6 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
   multilineEnd { "```" }
   @else multilineRest
 }
-
 
 @skip {} {
   BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
