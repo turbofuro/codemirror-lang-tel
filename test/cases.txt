@@ -8,6 +8,11 @@ Program(null)
 ==>
 Program(String)
 
+# String with sentence
+"hello world this is a sentence"
+==>
+Program(String)
+
 # Number and comment
 123.0 // comment
 ==>
@@ -113,3 +118,57 @@ Program(BinaryExpression(Number,CompareOp,Number))
 "\u1114" == "ᄔ"
 ==>
 Program(BinaryExpression(String,CompareOp,String))
+
+# Object
+{
+    hello: 5
+}
+==>
+Program(ObjectExpression("{",Property(PropertyName,":",Number),"}"))
+
+# Tagged pretty multiline string
+```tag
+Hello
+```
+==>
+Program(MultilineString)
+
+# Multiline string
+```
+Hello
+```
+==>
+Program(MultilineString)
+
+# Dirty multiline string
+```
+Hello```
+==>
+Program(MultilineString)
+
+# Empty multiline string
+```
+```
+==>
+Program(MultilineString)
+
+# Empty tagged multiline string
+```tag
+```
+==>
+Program(MultilineString)
+
+# Empty tagged multiline string with post whitespace
+```tag     
+```
+==>
+Program(MultilineString)
+
+# Tagged multiline (3 lines) string with post whitespace
+```tag     
+how
+are
+you?
+```
+==>
+Program(MultilineString)

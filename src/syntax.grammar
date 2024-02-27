@@ -13,7 +13,7 @@
 expression[@isGroup=Expression] {
   Number |
   String |
-  TemplateString |
+  MultilineString |
   Identifier ~arrow |
   @specialize[@name=BooleanLiteral]<Identifier, "true" | "false"> |
   kw<"null"> |
@@ -130,12 +130,21 @@ Interpolation { InterpolationStart expression "}" }
     '"' (![\\\n"] | "\\" _)* '"'?
   }
 
+  MultilineStringTag {
+    Identifier
+  }
+
+  // Multiline string like in Markdown (with tag)
+  MultilineString {
+    "```" (MultilineStringTag | "") newline (![\\\n"] | "\\" _)* newline* "```"
+  }
+  
   ArithOp<expr> { expr }
   LogicOp<expr> { expr }
   CompareOp { ("<" | ">" | "==" | "!=") "="? }
 
   "(" ")" "[" "]" "{" "}"
-  "." "," ";" ":"
+  "." "," ";" ":" "```"
 }
 
 @detectDelim

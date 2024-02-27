@@ -23,6 +23,8 @@ export const TelLanguage = LRLanguage.define({
         "import export from": t.moduleKeyword,
         "with debugger as new": t.keyword,
         TemplateString: t.special(t.string),
+        MultilineString: t.special(t.string),
+        MultilineStringTag: t.meta,
         super: t.atom,
         BooleanLiteral: t.bool,
         this: t.self,
